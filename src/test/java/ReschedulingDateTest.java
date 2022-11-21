@@ -30,42 +30,22 @@ import org.apache.commons.lang3.StringUtils.*;
 
 
 public class ReschedulingDateTest {
-    private static Faker faker;
 
-    @BeforeAll
-    static void setUpAll() {
-        faker = new Faker(new Locale("ru"));
-    }
-
-
-    private void printTestData(String name, String phone, String city) {
-        System.out.println(StringUtils.repeat("=", 30));
-        System.out.println(name + "\n" + phone + "\n" + city);
-        System.out.println(StringUtils.repeat("=", 30));
-    }
-
-    public String generateDate(int days) {
-        return LocalDate.now().plusDays(days).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-    }
-
-    String planningDate1 = generateDate(5);
-    String planningDate2 = generateDate(6);
 
     @Test
     void shouldReturnOkMessage() {
-        String name1 = DataGenerator.RequestForDelivery.generateInfo("ru").getFirstName() + " " +
-                DataGenerator.RequestForDelivery.generateInfo("ru").getLastName();
-        String phone1 = DataGenerator.RequestForDelivery.generateInfo("ru").getPhone();
-        String city1 = DataGenerator.RequestForDelivery.generateInfo("ru").getCity();
 
-        printTestData(name1, phone1, city1);
+        UsersData user1 = DataGenerator.RequestForDelivery.generateInfo("ru");
+        String planningDate1 = DataGenerator.RequestForDelivery.generateDate(5);
+        String planningDate2 = DataGenerator.RequestForDelivery.generateDate(6);
+
 
         open("http://localhost:9999");
-        $x("//input[@placeholder='Город']").setValue(city1);
+        $x("//input[@placeholder='Город']").setValue(user1.getCity());
         $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $x("//input[@placeholder='Дата встречи']").setValue(planningDate1);
-        $x("//input[@name='name']").setValue(name1);
-        $x("//input[@name='phone']").setValue(phone1);
+        $x("//input[@name='name']").setValue(user1.getFirstName() + " " + user1.getLastName());
+        $x("//input[@name='phone']").setValue(user1.getPhone());
         $("[data-test-id='agreement']").click();
         $x("//span[contains(text(),'планировать')]").click();
         $x("//div[@class='notification__content']")
@@ -74,16 +54,16 @@ public class ReschedulingDateTest {
 
 
         open("http://localhost:9999");
-        $x("//input[@placeholder='Город']").setValue(city1);
+        $x("//input[@placeholder='Город']").setValue(user1.getCity());
         $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $x("//input[@placeholder='Дата встречи']").setValue(planningDate2);
-        $x("//input[@name='name']").setValue(name1);
-        $x("//input[@name='phone']").setValue(phone1);
+        $x("//input[@name='name']").setValue(user1.getFirstName() + " " + user1.getLastName());
+        $x("//input[@name='phone']").setValue(user1.getPhone());
         $("[data-test-id='agreement']").click();
         $x("//span[contains(text(),'планировать')]").click();
         $x("//span[contains(text(),'Перепланировать')]").click();
         $x("//div[@class='notification__content']")
                 .shouldBe(visible, Duration.ofSeconds(30))
-                .shouldHave(Condition.text("Встреча успешно запланирована на "));
+                .shouldHave(Condition.text("Встреча успешно запланирована на " + planningDate2));
     }
 }
