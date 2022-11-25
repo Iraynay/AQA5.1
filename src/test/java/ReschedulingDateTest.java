@@ -43,7 +43,7 @@ public class ReschedulingDateTest {
 
         UsersData user1 = DataGenerator.RequestForDelivery.generateInfo("ru");
         String planningDate1 = DataGenerator.RequestForDelivery.generateDate(5);
-        String planningDate2 = DataGenerator.RequestForDelivery.generateDate(1);
+        String planningDate2 = DataGenerator.RequestForDelivery.generateDate(6);
 
 
         open("http://localhost:9999");
